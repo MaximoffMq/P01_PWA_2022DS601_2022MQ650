@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace P01_DonisSanchez_MoralesQuezada.Modelos
 {
     public class EspaciosParqueo
