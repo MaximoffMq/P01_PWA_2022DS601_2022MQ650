@@ -1,0 +1,6 @@
+@P01_DonisSanchez_MoralesQuezada_HostAddress = http://localhost:5286
+
+GET {{P01_DonisSanchez_MoralesQuezada_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
