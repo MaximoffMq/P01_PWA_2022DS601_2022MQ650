@@ -12,7 +12,7 @@ namespace P01_DonisSanchez_MoralesQuezada.Modelos
 
         public DbSet<Reservas> reservas { get; set; }
 
-        public DbSet<Sucursales> ucursales { get; set; }
+        public DbSet<Sucursales> sucursales { get; set; }
 
         public DbSet<Usuarios> usuarios { get; set; }
 

@@ -8,9 +8,9 @@ namespace P01_DonisSanchez_MoralesQuezada.Controllers
     [ApiController]
     public class ReservasController : ControllerBase
     {
-        private readonly ParqueoDbContext _parqueoContexto;
+        private readonly ParqueoDBcontext _parqueoContexto;
 
-        public ReservasController(ParqueoDbContext parqueoContexto)
+        public ReservasController(ParqueoDBcontext parqueoContexto)
         {
             _parqueoContexto = parqueoContexto;
         }
@@ -35,7 +35,7 @@ namespace P01_DonisSanchez_MoralesQuezada.Controllers
                 }
 
                 // Verificar si el espacio de parqueo existe
-                var espacio = _parqueoContexto.espaciosParqueo.FirstOrDefault(e => e.Id == nuevaReserva.EspacioParqueoId);
+                var espacio = _parqueoContexto.EspaciosParqueo.FirstOrDefault(e => e.Id == nuevaReserva.EspacioParqueoId);
                 if (espacio == null)
                 {
                     return BadRequest(new { message = "El espacio de parqueo no existe." });
