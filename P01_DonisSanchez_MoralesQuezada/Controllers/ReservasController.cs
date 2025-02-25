@@ -118,6 +118,7 @@ namespace P01_DonisSanchez_MoralesQuezada.Controllers
                     {
                         Usuario = rue.ru.u.Nombre,
                         EspacioParqueo = rue.e.Ubicacion,
+                        IdEspacioParqueo = rue.e.Id,
                         Sucursal = s.Nombre,
                         Fecha = rue.ru.r.Fecha,
                         CantidadHoras = rue.ru.r.CantidadHoras
@@ -141,6 +142,81 @@ namespace P01_DonisSanchez_MoralesQuezada.Controllers
                     .ToList();
 
                 return Ok(new { reservasPorSucursal });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        //Mostrar una lista de reservas activas del usuario.
+        [HttpGet]
+        [Route("reservasActivas/{UsuarioId}")]
+        public IActionResult ObtenerReservasActivas(int UsuarioId)
+        {
+            try
+            {
+                // Validar si el usuario existe
+                var usuario = _parqueoContexto.usuarios.FirstOrDefault(u => u.Id == UsuarioId);
+                if (usuario == null)
+                {
+                    return BadRequest(new { message = "El usuario no existe." });
+                }
+
+                // Obtener las reservas activas del usuario (en este caso, aquellas cuya fecha es futura)
+                var reservasActivas = _parqueoContexto.reservas
+                    .Where(r => r.UsuarioId == UsuarioId && r.Fecha >= DateTime.Now) // Filtrar por reservas futuras
+                    .Join(_parqueoContexto.EspaciosParqueo, r => r.EspacioParqueoId, e => e.Id, (r, e) => new { r, e })
+                    .Join(_parqueoContexto.sucursales, rue => rue.e.SucursalId, s => s.Id, (rue, s) => new
+                    {
+                        Usuario = usuario.Nombre,
+                        EspacioParqueo = rue.e.Ubicacion,
+                        IdEspacioParqueo = rue.e.Id,
+                        Sucursal = s.Nombre,
+                        Fecha = rue.r.Fecha,
+                        CantidadHoras = rue.r.CantidadHoras
+                    })
+                    .ToList();
+
+                // Verificar si existen reservas activas
+                if (!reservasActivas.Any())
+                {
+                    return NotFound(new { message = "No hay reservas activas para el Usuario " + usuario.Nombre });
+                }
+
+                return Ok(new { reservasActivas });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        //Cancelar una reserva antes de su uso
+        [HttpPost]
+        [Route("cancelarReserva/{ReservaId}")]
+        public IActionResult CancelarReserva(int ReservaId)
+        {
+            try
+            {
+                var reserva = _parqueoContexto.reservas.FirstOrDefault(r => r.Id == ReservaId);
+
+                if (reserva == null)
+                {
+                    return BadRequest(new { message = "La reserva no existe." });
+                }
+
+                if (reserva.Fecha < DateTime.Now)
+                {
+                    return BadRequest(new { message = "No se puede cancelar una reserva ya pasada." });
+                }
+
+                reserva.Cancelada = 1; // Marcar como cancelada
+                _parqueoContexto.SaveChanges();
+
+                return Ok(new { message = "Reserva cancelada exitosamente." });
             }
             catch (Exception ex)
             {
