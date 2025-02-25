@@ -8,7 +8,7 @@ namespace P01_DonisSanchez_MoralesQuezada.Modelos
         {
         }
 
-        public DbSet<EspaciosParqueo> espacios { get; set; }
+        public DbSet<EspaciosParqueo> EspaciosParqueo { get; set; }
 
         public DbSet<Reservas> reservas { get; set; }
 
