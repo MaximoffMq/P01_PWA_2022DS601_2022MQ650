@@ -10,6 +10,6 @@ namespace P01_DonisSanchez_MoralesQuezada.Modelos
         public int EspacioParqueoId { get; set; }
         public DateTime Fecha { get; set; } //yyyy-MM-dd
         public int CantidadHoras { get; set; }
-
+        public int Cancelada { get; set; }
     }
 }
