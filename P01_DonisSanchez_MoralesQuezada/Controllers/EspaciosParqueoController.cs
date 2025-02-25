@@ -20,7 +20,7 @@ public class EspaciosParqueoController : ControllerBase
     {
         try
         {
-            _parqueoDbC.espacios.Add(espacio);
+            _parqueoDbC.EspaciosParqueo.Add(espacio);
             _parqueoDbC.SaveChanges();
             return Ok(espacio);
         }
@@ -34,7 +34,7 @@ public class EspaciosParqueoController : ControllerBase
     [Route("actualizar/{id}")]
     public IActionResult Actualizar(int id, [FromBody] EspaciosParqueo espacioModificar)
     {
-        var espacioActual = _parqueoDbC.espacios.FirstOrDefault(e => e.Id == id);
+        var espacioActual = _parqueoDbC.EspaciosParqueo.FirstOrDefault(e => e.Id == id);
 
         if (espacioActual == null)
         {
