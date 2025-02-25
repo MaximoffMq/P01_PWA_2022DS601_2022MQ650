@@ -67,7 +67,7 @@ public class EspaciosParqueoController : ControllerBase
                 r => r.EspacioParqueoId,
                 (ep, reservas) => new
                 {
-                    ep.Id,
+                    Id_espacio = ep.Id,
                     ep.Numero,
                     ep.Ubicacion,
                     ep.CostoPorHora,
@@ -84,7 +84,46 @@ public class EspaciosParqueoController : ControllerBase
         return Ok(espaciosDisponibles);
     }
 
+    [HttpDelete]
+    [Route("eliminarEspacio/{id}")]
+    public IActionResult EliminarEspacio(int id)
+    {
+        var espacio = _parqueoDbC.EspaciosParqueo.FirstOrDefault(e => e.Id == id);
 
+        if (espacio == null)
+        {
+            return NotFound("El espacio de parqueo no existe.");
+        }
+
+        // Si hay reservas asociadas al espacio de parqueo, no se puede eliminar
+        var reservas = _parqueoDbC.reservas.Any(r => r.EspacioParqueoId == id);
+        if (reservas)
+        {
+            return BadRequest("El espacio de parqueo no se puede eliminar porque tiene reservas asociadas.");
+        }
+        else
+        {
+            _parqueoDbC.EspaciosParqueo.Remove(espacio);
+            _parqueoDbC.SaveChanges();
+        }
+        
+
+        return Ok("Espacio de parqueo eliminado exitosamente.");
+    }
+
+    [HttpGet]
+    [Route("obtenerTodosEspacios")]
+    public IActionResult ObtenerTodosEspacios()
+    {
+        var espacios = _parqueoDbC.EspaciosParqueo.ToList();
+
+        if (espacios.Count == 0)
+        {
+            return NotFound("No hay espacios de parqueo disponibles.");
+        }
+
+        return Ok(espacios);
+    }
 
 
 }
