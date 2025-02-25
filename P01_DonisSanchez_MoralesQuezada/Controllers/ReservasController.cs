@@ -224,6 +224,47 @@ namespace P01_DonisSanchez_MoralesQuezada.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("reservasPorFecha/{fechaInicio}/{fechaFin}/{sucursalId}")]
+        public IActionResult ObtenerReservasPorFecha(DateTime fechaInicio, DateTime fechaFin, int sucursalId)
+        {
+            try
+            {
+                // Validar que las fechas sean correctas
+                if (fechaInicio >= fechaFin)
+                {
+                    return BadRequest(new { message = "La fecha de inicio debe ser anterior a la fecha de fin." });
+                }
+
+                // Obtener las reservas de la sucursal específica entre las dos fechas dadas
+                var reservas = (from r in _parqueoContexto.reservas
+                                join ep in _parqueoContexto.EspaciosParqueo on r.EspacioParqueoId equals ep.Id
+                                where ep.SucursalId == sucursalId && r.Fecha >= fechaInicio && r.Fecha <= fechaFin
+                                select new
+                                {
+                                    r.Id,
+                                    r.UsuarioId,
+                                    r.Fecha,
+                                    r.CantidadHoras,
+                                    r.Cancelada,
+                                    EspacioParqueoId = ep.Id,
+                                    ep.Ubicacion,
+                                    ep.CostoPorHora
+                                }).ToList();
+
+                // Verificar si se encontraron reservas
+                if (reservas.Count == 0)
+                {
+                    return NotFound(new { message = "No se encontraron reservas en el rango de fechas proporcionado." });
+                }
+
+                return Ok(reservas);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
     }
 }

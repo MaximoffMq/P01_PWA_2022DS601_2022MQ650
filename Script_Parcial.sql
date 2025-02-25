@@ -10,7 +10,7 @@ CREATE TABLE Usuarios (
     Nombre NVARCHAR(100) NOT NULL,
     Correo NVARCHAR(100) UNIQUE NOT NULL,
     Telefono NVARCHAR(20) NOT NULL,
-    Contrasena NVARCHAR(255) NOT NULL, -- Encriptada
+    Contrasena NVARCHAR(255) NOT NULL,
     Rol NVARCHAR(50) NOT NULL CHECK (Rol IN ('Cliente', 'Empleado'))
 );
 
@@ -42,6 +42,7 @@ CREATE TABLE Reservas (
     EspacioParqueoId INT NOT NULL,
     Fecha DATETIME NOT NULL,
     CantidadHoras INT NOT NULL CHECK (CantidadHoras > 0),
+    Cancelada INT DEFAULT 0,
     FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE,  -- Elimina las reservas cuando se elimina un usuario
     FOREIGN KEY (EspacioParqueoId) REFERENCES EspaciosParqueo(Id) ON DELETE NO ACTION  -- Elimina las reservas cuando se elimina un espacio de parqueo
 );
@@ -50,11 +51,11 @@ CREATE TABLE Reservas (
 
 -- Inserciones de Usuarios
 INSERT INTO Usuarios (Nombre, Correo, Telefono, Contrasena, Rol) VALUES
-(N'Juan Pérez', N'juan.perez@email.com', N'123456789', N'hashed_password1', N'Cliente'),
-(N'María López', N'maria.lopez@email.com', N'987654321', N'hashed_password2', N'Cliente'),
-(N'Carlos Gómez', N'carlos.gomez@email.com', N'567890123', N'hashed_password3', N'Cliente'),
+(N'Juan PÃ©rez', N'juan.perez@email.com', N'123456789', N'hashed_password1', N'Cliente'),
+(N'MarÃ­a LÃ³pez', N'maria.lopez@email.com', N'987654321', N'hashed_password2', N'Cliente'),
+(N'Carlos GÃ³mez', N'carlos.gomez@email.com', N'567890123', N'hashed_password3', N'Cliente'),
 (N'Laura Torres', N'laura.torres@email.com', N'456123789', N'hashed_password4', N'Empleado'),
-(N'Pedro Ramírez', N'pedro.ramirez@email.com', N'789321456', N'hashed_password5', N'Empleado'),
+(N'Pedro RamÃ­rez', N'pedro.ramirez@email.com', N'789321456', N'hashed_password5', N'Empleado'),
 (N'Ana Castillo', N'ana.castillo@email.com', N'321654987', N'hashed_password6', N'Empleado');
 
 -- Inserciones de Sucursales
@@ -100,9 +101,9 @@ INSERT INTO EspaciosParqueo (Numero, Ubicacion, CostoPorHora, SucursalId) VALUES
 (15, N'Sexto piso, cerca del ascensor', 3.00, 2),
 (16, N'Sexto piso, entrada', 3.00, 2),
 (17, N'Sexto piso, lateral', 3.00, 2),
-(18, N'Séptimo piso, centro', 3.00, 2),
-(19, N'Séptimo piso, esquina', 3.00, 2),
-(20, N'Séptimo piso, lateral', 3.00, 2);
+(18, N'SÃ©ptimo piso, centro', 3.00, 2),
+(19, N'SÃ©ptimo piso, esquina', 3.00, 2),
+(20, N'SÃ©ptimo piso, lateral', 3.00, 2);
 
 
 INSERT INTO EspaciosParqueo (Numero, Ubicacion, CostoPorHora, SucursalId) VALUES
@@ -123,9 +124,9 @@ INSERT INTO EspaciosParqueo (Numero, Ubicacion, CostoPorHora, SucursalId) VALUES
 (15, N'Sexto piso, cerca del ascensor', 3.00, 3),
 (16, N'Sexto piso, entrada', 3.00, 3),
 (17, N'Sexto piso, lateral', 3.00, 3),
-(18, N'Séptimo piso, centro', 3.00, 3),
-(19, N'Séptimo piso, esquina', 3.00, 3),
-(20, N'Séptimo piso, lateral', 3.00, 3),
+(18, N'SÃ©ptimo piso, centro', 3.00, 3),
+(19, N'SÃ©ptimo piso, esquina', 3.00, 3),
+(20, N'SÃ©ptimo piso, lateral', 3.00, 3),
 (21, N'Octavo piso, cerca del ascensor', 3.00, 3),
 (22, N'Octavo piso, centro', 3.00, 3),
 (23, N'Octavo piso, lateral', 3.00, 3),
