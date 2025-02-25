@@ -29,6 +29,7 @@ public class EspaciosParqueoController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     [HttpPut]
     [Route("actualizar/{id}")]
     public IActionResult Actualizar(int id, [FromBody] EspaciosParqueo espacioModificar)
@@ -50,6 +51,40 @@ public class EspaciosParqueoController : ControllerBase
 
         return Ok(espacioModificar);
     }
+
+
+    [HttpGet]
+    [Route("espaciosDisponibles/{sucursalId}/{fecha}")]
+    public IActionResult ObtenerEspaciosDisponibles(int sucursalId, DateTime fecha)
+    {
+        var fechaFormateada = fecha.Date; // Asegúrate de que la fecha esté en formato de solo fecha (sin hora)
+
+        var espaciosDisponibles = _parqueoDbC.EspaciosParqueo
+            .Where(ep => ep.SucursalId == sucursalId)
+            .GroupJoin(
+                _parqueoDbC.reservas.Where(r => r.Fecha.Date == fechaFormateada),
+                ep => ep.Id,
+                r => r.EspacioParqueoId,
+                (ep, reservas) => new
+                {
+                    ep.Id,
+                    ep.Numero,
+                    ep.Ubicacion,
+                    ep.CostoPorHora,
+                    Estado = reservas.Any() ? "Ocupado" : "Disponible"
+                })
+            .Where(e => e.Estado == "Disponible")
+            .ToList();
+
+        if (espaciosDisponibles.Count == 0)
+        {
+            return NotFound("No hay espacios disponibles para esta fecha.");
+        }
+
+        return Ok(espaciosDisponibles);
+    }
+
+
 
 
 }
