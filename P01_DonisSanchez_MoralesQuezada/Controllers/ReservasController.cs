@@ -94,5 +94,60 @@ namespace P01_DonisSanchez_MoralesQuezada.Controllers
             }
         }
 
+
+        //reservaciones por dia
+        [HttpGet]
+        [Route("reservasPorDia/{fecha}")]
+        public IActionResult ObtenerReservasPorDia(string fecha)
+        {
+            try
+            {
+                // Convertir la fecha a DateTime
+                DateTime fechaReserva;
+                if (!DateTime.TryParse(fecha, out fechaReserva))
+                {
+                    return BadRequest(new { message = "La fecha proporcionada no es válida." });
+                }
+
+                // Obtener las reservas para esa fecha
+                var reservas = _parqueoContexto.reservas
+                    .Where(r => r.Fecha.Date == fechaReserva.Date) // Asegurarse de que solo se obtiene la fecha sin la hora
+                    .Join(_parqueoContexto.usuarios, r => r.UsuarioId, u => u.Id, (r, u) => new { r, u })
+                    .Join(_parqueoContexto.EspaciosParqueo, ru => ru.r.EspacioParqueoId, e => e.Id, (ru, e) => new { ru, e })
+                    .Join(_parqueoContexto.sucursales, rue => rue.e.SucursalId, s => s.Id, (rue, s) => new
+                    {
+                        Usuario = rue.ru.u.Nombre,
+                        EspacioParqueo = rue.e.Ubicacion,
+                        Sucursal = s.Nombre,
+                        Fecha = rue.ru.r.Fecha,
+                        CantidadHoras = rue.ru.r.CantidadHoras
+                    })
+                    .ToList();
+
+                // Verificar si hay reservas
+                if (!reservas.Any())
+                {
+                    return NotFound(new { message = "No hay reservas para la fecha especificada." });
+                }
+
+                // Devolver las reservas agrupadas por sucursal
+                var reservasPorSucursal = reservas
+                    .GroupBy(r => r.Sucursal)
+                    .Select(g => new
+                    {
+                        Sucursal = g.Key,
+                        Reservas = g.ToList()
+                    })
+                    .ToList();
+
+                return Ok(new { reservasPorSucursal });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
     }
 }
